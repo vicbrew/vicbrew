@@ -183,6 +183,15 @@
     }
 
     switch (layout) {
+      case "judging_entry_style_score_name_club_place":
+        // Judging and entry numbers are identifiers; only the final result is a placing.
+        var resultPlace = after.match(/(?:^|\s)(=?\d+(?:st|nd|rd|th))\s*$/i);
+        place = resultPlace ? formatPlace(resultPlace[1]) : "";
+        var judgedStyle = before.match(/^\d+\s+\d+\s+\d+[a-z]\s+(.+?)\s+\d+(?:\.\d+)?(?:\s|$)/i);
+        if (judgedStyle) style = cleanStyle(judgedStyle[1]);
+        clubParts = splitClub(after);
+        if (clubParts) club = clubParts.club;
+        break;
       case "place_name_entry_style_club_score":
         clubParts = splitClub(after);
         if (clubParts) {
@@ -398,30 +407,19 @@
 
     var details = document.createElement("p");
     details.className = "results-search-result__details";
+    details.textContent = page.competition + " " + page.year + " · " + page.kind + " · page " + page.page;
     var link = document.createElement("a");
+    link.className = "text-link";
     link.href = page.path + "#page=" + page.page;
     link.target = "_blank";
     link.rel = "noopener";
-    link.textContent = page.competition + " " + page.year + " · " + page.kind + " · page " + page.page;
-    details.appendChild(link);
+    link.textContent = "View results PDF";
 
     var fieldList = document.createElement("dl");
     fieldList.className = "results-search-result__fields";
     addResultField(fieldList, "Place", fields.place || "Not stated");
     addResultField(fieldList, "Style", fields.style || "Not identified");
     addResultField(fieldList, "Club", fields.club);
-
-    var sourceDetails;
-    if (fields.raw && fields.raw.length <= 500) {
-      sourceDetails = document.createElement("details");
-      sourceDetails.className = "results-search-result__source";
-      var summary = document.createElement("summary");
-      summary.textContent = "View extracted source row";
-      var source = document.createElement("p");
-      source.textContent = fields.raw;
-      sourceDetails.appendChild(summary);
-      sourceDetails.appendChild(source);
-    }
 
     var filename = document.createElement("p");
     filename.className = "results-search-result__filename";
@@ -430,7 +428,7 @@
     item.appendChild(heading);
     item.appendChild(details);
     item.appendChild(fieldList);
-    if (sourceDetails) item.appendChild(sourceDetails);
+    item.appendChild(link);
     item.appendChild(filename);
     return item;
   }

@@ -345,6 +345,7 @@ def detect_result_layout(text: str, item: dict[str, str | int]) -> str:
 
     normalized = re.sub(r"[^a-z0-9]+", " ", text.casefold()).strip()
     patterns = (
+        ("judging number entry number style style name score first name last name club result", "judging_entry_style_score_name_club_place"),
         ("place first name last name style entry name score", "place_name_style_entry_score"),
         ("place entry style name entrant name club score", "place_entry_style_name_club_score"),
         ("place entrant entry style club score", "place_name_entry_style_club_score"),
